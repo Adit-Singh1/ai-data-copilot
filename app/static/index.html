@@ -6,205 +6,108 @@
     <title>AI Data Copilot</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0f1117;
-            color: #e0e0e0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background: #0f1117; color: #e0e0e0;
+            height: 100vh; display: flex; flex-direction: column;
         }
-
-        /* Header */
         .header {
-            background: #1a1d27;
-            padding: 16px 24px;
+            background: #1a1d27; padding: 16px 24px;
             border-bottom: 1px solid #2a2d3a;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            display: flex; align-items: center; gap: 12px;
         }
         .header-icon {
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+            border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; font-size: 18px;
         }
         .header-title { font-size: 18px; font-weight: 600; color: #fff; }
         .header-subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
-        .status {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #10b981;
-        }
+        .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+        .status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #10b981; }
         .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+            width: 8px; height: 8px; background: #10b981;
+            border-radius: 50%; animation: pulse 2s infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+        .clear-btn {
+            background: transparent; border: 1px solid #374151;
+            color: #6b7280; padding: 6px 12px; border-radius: 6px;
+            font-size: 12px; cursor: pointer; transition: all 0.2s;
         }
-
-        /* Chat area */
+        .clear-btn:hover { border-color: #ef4444; color: #ef4444; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .chat-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            flex: 1; overflow-y: auto; padding: 24px;
+            display: flex; flex-direction: column; gap: 20px;
         }
-
-        /* Messages */
         .message { display: flex; gap: 12px; max-width: 800px; }
         .message.user { margin-left: auto; flex-direction: row-reverse; }
-
         .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
         }
         .avatar.ai { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
         .avatar.user { background: #374151; }
-
         .bubble {
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.6;
-            max-width: 680px;
+            padding: 12px 16px; border-radius: 12px;
+            font-size: 14px; line-height: 1.6; max-width: 680px;
         }
-        .bubble.ai {
-            background: #1a1d27;
-            border: 1px solid #2a2d3a;
-            color: #e0e0e0;
-        }
-        .bubble.user {
-            background: #6366f1;
-            color: #fff;
-        }
-
-        /* Markdown-like formatting */
+        .bubble.ai { background: #1a1d27; border: 1px solid #2a2d3a; color: #e0e0e0; }
+        .bubble.user { background: #6366f1; color: #fff; }
+        .bubble.error { background: #2d1f1f; border: 1px solid #ef4444; color: #fca5a5; }
         .bubble h3 { color: #a78bfa; margin: 12px 0 6px; font-size: 14px; }
         .bubble ul { padding-left: 20px; margin: 6px 0; }
         .bubble li { margin: 4px 0; }
         .bubble strong { color: #fff; }
-
-        /* Typing indicator */
-        .typing {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            padding: 16px;
+        .memory-badge {
+            font-size: 10px; color: #6b7280;
+            margin-top: 6px; display: flex; align-items: center; gap: 4px;
         }
+        .typing { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
         .typing span {
-            width: 8px;
-            height: 8px;
-            background: #6366f1;
-            border-radius: 50%;
-            animation: bounce 1.2s infinite;
+            width: 8px; height: 8px; background: #6366f1;
+            border-radius: 50%; animation: bounce 1.2s infinite;
         }
         .typing span:nth-child(2) { animation-delay: 0.2s; }
         .typing span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-
-        /* Suggested queries */
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .suggestions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 0 24px 16px;
+            display: flex; flex-wrap: wrap; gap: 8px; padding: 0 24px 16px;
         }
         .suggestion-btn {
-            background: #1a1d27;
-            border: 1px solid #2a2d3a;
-            color: #a78bfa;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: #1a1d27; border: 1px solid #2a2d3a;
+            color: #a78bfa; padding: 8px 14px; border-radius: 20px;
+            font-size: 12px; cursor: pointer; transition: all 0.2s;
         }
-        .suggestion-btn:hover {
-            background: #6366f1;
-            color: #fff;
-            border-color: #6366f1;
-        }
-
-        /* Input area */
+        .suggestion-btn:hover { background: #6366f1; color: #fff; border-color: #6366f1; }
         .input-area {
-            padding: 16px 24px;
-            background: #1a1d27;
+            padding: 16px 24px; background: #1a1d27;
             border-top: 1px solid #2a2d3a;
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
+            display: flex; gap: 12px; align-items: flex-end;
         }
         textarea {
-            flex: 1;
-            background: #0f1117;
-            border: 1px solid #2a2d3a;
-            border-radius: 10px;
-            padding: 12px 16px;
-            color: #e0e0e0;
-            font-size: 14px;
-            resize: none;
-            outline: none;
-            min-height: 48px;
-            max-height: 120px;
-            font-family: inherit;
-            transition: border-color 0.2s;
+            flex: 1; background: #0f1117; border: 1px solid #2a2d3a;
+            border-radius: 10px; padding: 12px 16px; color: #e0e0e0;
+            font-size: 14px; resize: none; outline: none;
+            min-height: 48px; max-height: 120px;
+            font-family: inherit; transition: border-color 0.2s;
         }
         textarea:focus { border-color: #6366f1; }
         textarea::placeholder { color: #4b5563; }
-
         .send-btn {
-            width: 48px;
-            height: 48px;
-            background: #6366f1;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-            flex-shrink: 0;
+            width: 48px; height: 48px; background: #6366f1;
+            border: none; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s; flex-shrink: 0;
         }
         .send-btn:hover { background: #4f46e5; }
         .send-btn:disabled { background: #374151; cursor: not-allowed; }
         .send-btn svg { width: 20px; height: 20px; fill: white; }
-
-        /* Welcome message */
-        .welcome {
-            text-align: center;
-            padding: 40px 20px;
-            color: #4b5563;
-        }
+        .welcome { text-align: center; padding: 40px 20px; color: #4b5563; }
         .welcome h2 { color: #a78bfa; font-size: 24px; margin-bottom: 8px; }
-        .welcome p { font-size: 14px; }
-
-        /* Scrollbar */
+        .welcome p { font-size: 14px; margin-bottom: 4px; }
         .chat-area::-webkit-scrollbar { width: 6px; }
         .chat-area::-webkit-scrollbar-track { background: transparent; }
         .chat-area::-webkit-scrollbar-thumb { background: #2a2d3a; border-radius: 3px; }
@@ -218,38 +121,31 @@
         <div class="header-title">AI Data Copilot</div>
         <div class="header-subtitle">Multi-Agent Network Analysis System</div>
     </div>
-    <div class="status">
-        <div class="status-dot"></div>
-        Online
+    <div class="header-right">
+        <div class="status"><div class="status-dot"></div>Online</div>
+        <button class="clear-btn" onclick="clearMemory()">🗑 Clear Memory</button>
     </div>
 </div>
 
 <div class="chat-area" id="chatArea">
     <div class="welcome">
         <h2>👋 Welcome to AI Data Copilot</h2>
-        <p>Ask me anything about your network data. I'll analyze it and give you insights.</p>
+        <p>Ask me anything about your network data.</p>
+        <p style="color: #6366f1; font-size: 12px; margin-top: 8px;">🧠 Memory enabled — I remember your conversation</p>
     </div>
 </div>
 
 <div class="suggestions">
-    <button class="suggestion-btn" onclick="sendSuggestion('Analyze zero traffic cells for last 7 days')">
-        📡 Zero traffic cells
-    </button>
-    <button class="suggestion-btn" onclick="sendSuggestion('Which cells have the highest traffic?')">
-        📈 Highest traffic cells
-    </button>
-    <button class="suggestion-btn" onclick="sendSuggestion('Show me cells that recently dropped to zero')">
-        ⚠️ Recently dropped cells
-    </button>
-    <button class="suggestion-btn" onclick="sendSuggestion('Give me a full network health report')">
-        🏥 Full health report
-    </button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Analyze zero traffic cells for last 7 days')">📡 Zero traffic cells</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Which cells have the highest traffic?')">📈 Highest traffic</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Show me cells that recently dropped to zero')">⚠️ Recently dropped</button>
+    <button class="suggestion-btn" onclick="sendSuggestion('Give me a full network health report')">🏥 Health report</button>
 </div>
 
 <div class="input-area">
     <textarea
         id="queryInput"
-        placeholder="Ask about your network data..."
+        placeholder="Ask about your network data... (I remember previous questions!)"
         rows="1"
         onkeydown="handleKey(event)"
         oninput="autoResize(this)"
@@ -260,12 +156,15 @@
 </div>
 
 <script>
+    // Generate unique session ID for this browser tab
+    const sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+    let messageCount = 0;
+
     function formatResponse(text) {
         return text
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>')
             .replace(/- (.*?)(\n|$)/g, '<li>$1</li>')
-            .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
             .replace(/\n/g, '<br>');
     }
 
@@ -274,12 +173,20 @@
         const welcome = chatArea.querySelector('.welcome');
         if (welcome) welcome.remove();
 
-        const avatar = type === 'ai' ? '🤖' : '👤';
+        messageCount++;
         const div = document.createElement('div');
-        div.className = `message ${type}`;
+        div.className = `message ${type === 'error' ? '' : type}`;
+
+        const memoryNote = (type === 'ai' && messageCount > 2)
+            ? `<div class="memory-badge">🧠 Using conversation memory</div>`
+            : '';
+
         div.innerHTML = `
-            <div class="avatar ${type}">${avatar}</div>
-            <div class="bubble ${type}">${type === 'ai' ? formatResponse(text) : text}</div>
+            <div class="avatar ${type === 'error' ? 'ai' : type}">${type === 'user' ? '👤' : '🤖'}</div>
+            <div class="bubble ${type}">
+                ${type === 'ai' ? formatResponse(text) : text}
+                ${type === 'ai' ? memoryNote : ''}
+            </div>
         `;
         chatArea.appendChild(div);
         chatArea.scrollTop = chatArea.scrollHeight;
@@ -293,9 +200,7 @@
         div.innerHTML = `
             <div class="avatar ai">🤖</div>
             <div class="bubble ai">
-                <div class="typing">
-                    <span></span><span></span><span></span>
-                </div>
+                <div class="typing"><span></span><span></span><span></span></div>
             </div>
         `;
         chatArea.appendChild(div);
@@ -303,8 +208,8 @@
     }
 
     function removeTyping() {
-        const typing = document.getElementById('typingIndicator');
-        if (typing) typing.remove();
+        const el = document.getElementById('typingIndicator');
+        if (el) el.remove();
     }
 
     async function sendQuery() {
@@ -320,19 +225,39 @@
         showTyping();
 
         try {
-            const response = await fetch(`/query?query=${encodeURIComponent(query)}`, {
-                method: 'POST'
-            });
+            const response = await fetch(
+                `/query?query=${encodeURIComponent(query)}&session_id=${sessionId}`,
+                { method: 'POST', headers: { 'accept': 'application/json' } }
+            );
+
             const data = await response.json();
             removeTyping();
-            addMessage(data.final_output, 'ai');
+
+            if (data.final_output) {
+                addMessage(data.final_output, 'ai');
+            } else {
+                addMessage('No response received. Please try again.', 'error');
+            }
         } catch (error) {
             removeTyping();
-            addMessage('Sorry, something went wrong. Please try again.', 'ai');
+            addMessage('Error: ' + error.message, 'error');
         }
 
         sendBtn.disabled = false;
         input.focus();
+    }
+
+    async function clearMemory() {
+        await fetch(`/clear?session_id=${sessionId}`, { method: 'POST' });
+        messageCount = 0;
+        const chatArea = document.getElementById('chatArea');
+        chatArea.innerHTML = `
+            <div class="welcome">
+                <h2>👋 Memory Cleared!</h2>
+                <p>Starting a fresh conversation.</p>
+                <p style="color: #6366f1; font-size: 12px; margin-top: 8px;">🧠 Memory enabled — I remember your conversation</p>
+            </div>
+        `;
     }
 
     function sendSuggestion(text) {
@@ -352,6 +277,5 @@
         el.style.height = Math.min(el.scrollHeight, 120) + 'px';
     }
 </script>
-
 </body>
 </html>
