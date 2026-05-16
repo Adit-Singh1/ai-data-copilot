@@ -4,4 +4,7 @@ __pycache__/
 *.pyo
 .env
 data/sample.db
+data/users.json
 .DS_Store
+*.egg-info
+dist/

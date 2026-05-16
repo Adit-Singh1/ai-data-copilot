@@ -177,7 +177,7 @@
     <div class="header-right">
         <div class="status"><div class="status-dot"></div>Online</div>
         <span id="userBadge" style="font-size:12px;color:#a78bfa;padding:6px 10px;background:#1a1d27;border:1px solid #2a2d3a;border-radius:6px;">👤 </span><button class="btn" onclick="refreshCharts()">🔄 Charts</button>
-        <button class="btn danger" onclick="clearMemory()">🗑 Clear</button><button class="btn danger" onclick="logout()">🚪 Logout</button>
+        <button class="btn danger" onclick="clearMemory()">🗑 Clear</button>
     </div>
 </div>
 
@@ -445,23 +445,3 @@
 </script>
 </body>
 </html>
-<script>
-    // Auth check — redirect to login if not logged in
-    const currentUser = localStorage.getItem('copilot_user');
-    if (!currentUser) {
-        window.location.href = '/';
-    } else {
-        // Show username in header
-        document.querySelector('.header-subtitle').textContent =
-            `Multi-Agent Network Analysis System · 👤 ${currentUser}`;
-    }
-
-    // Logout function
-    function logout() {
-        localStorage.removeItem('copilot_user');
-        window.location.href = '/';
-    }
-
-    // Use username as session ID so each user gets their own memory
-    const userSessionId = 'user_' + currentUser;
-</script>

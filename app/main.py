@@ -5,15 +5,38 @@ from app.workflows.graph import build_graph
 from app.memory.memory_manager import get_history, add_to_history, clear_history
 from app.tools.chart_tool import chart_traffic_over_time, chart_zero_traffic_cells, chart_cell_comparison
 from app.tools.csv_tool import process_csv
+from app.auth.auth_handler import register_user, login_user
+from pydantic import BaseModel
+import os
+
+# Load env variables
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 graph = build_graph()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+class AuthRequest(BaseModel):
+    username: str
+    password: str
+
 @app.get("/")
 def home():
+    return FileResponse("app/static/login.html")
+
+@app.get("/app")
+def main_app():
     return FileResponse("app/static/index.html")
+
+@app.post("/auth/register")
+def register(req: AuthRequest):
+    return register_user(req.username, req.password)
+
+@app.post("/auth/login")
+def login(req: AuthRequest):
+    return login_user(req.username, req.password)
 
 @app.post("/query")
 def run_query(query: str, session_id: str = "default"):
